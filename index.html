@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>FLASHPAY JX</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+    --black:#050505;
+    --black2:#0b0b0b;
+    --card:#111;
+    --line:#252525;
+    --muted:#777;
+    --purple:#8752aa;
+    --purple2:#b86bdd;
+    --white:#fff;
+}
+
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#000;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+button,input{
+    font:inherit;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+}
+
+/* =========================
+   MAIN APP
+========================= */
+
+.app{
+    min-height:100vh;
+    min-height:100dvh;
+    background:#000;
+    transition:
+        background .6s ease,
+        filter .6s ease;
+}
+
+.app.on{
+    background:
+        radial-gradient(
+            circle at 50% 18%,
+            #422454 0%,
+            #281635 30%,
+            #100a16 68%,
+            #000 100%
+        );
+}
+
+.topbar{
+    height:68px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.brand{
+    font-size:16px;
+    font-weight:900;
+    letter-spacing:3px;
+}
+
+.brand span{
+    color:#858585;
+    font-weight:400;
+}
+
+.home{
+    width:100%;
+    max-width:500px;
+    min-height:calc(100vh - 68px);
+    margin:auto;
+
+    padding:45px 22px 25px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.state{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.state-small{
+    color:#555;
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.state-big{
+    margin-top:7px;
+    color:#777;
+    font-size:14px;
+    font-weight:800;
+    transition:.4s;
+}
+
+.app.on .state-big{
+    color:#c98be9;
+}
+
+.flash{
+    width:220px;
+    height:285px;
+
+    border-radius:30px;
+
+    background:
+        linear-gradient(145deg,#151515,#070707);
+
+    border:1px solid #222;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    color:#fff;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.65);
+
+    transition:
+        transform .2s ease,
+        background .6s ease,
+        border-color .6s ease,
+        box-shadow .6s ease;
+}
+
+.flash:active{
+    transform:scale(.975);
+}
+
+.app.on .flash{
+    background:
+        linear-gradient(145deg,#2d1940,#100918);
+
+    border-color:#6c4384;
+
+    box-shadow:
+        0 25px 75px rgba(108,57,145,.28);
+}
+
+.flash-icon{
+    width:92px;
+    height:92px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#181818;
+    border:1px solid #2a2a2a;
+
+    font-size:42px;
+
+    transition:.5s;
+}
+
+.app.on .flash-icon{
+    background:#79489e;
+    border-color:#a86fd0;
+    box-shadow:
+        0 0 40px rgba(183,105,232,.3);
+}
+
+.flash-label{
+    margin-top:24px;
+
+    font-size:14px;
+    font-weight:900;
+    letter-spacing:3px;
+
+    color:#777;
+}
+
+.app.on .flash-label{
+    color:#e1c9ed;
+}
+
+.flash-hint{
+    margin-top:9px;
+    color:#444;
+    font-size:10px;
+}
+
+.app.on .flash-hint{
+    color:#82668e;
+}
+
+.home-footer{
+    margin-top:auto;
+    color:#3c3c3c;
+    font-size:10px;
+}
+
+
+/* =========================
+   OVERLAY / SHEET
+========================= */
+
+.overlay{
+    position:fixed;
+    inset:0;
+    z-index:50;
+
+    background:rgba(0,0,0,.76);
+
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:
+        opacity .3s ease,
+        visibility .3s ease;
+}
+
+.overlay.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.sheet{
+    width:100%;
+    max-width:500px;
+    max-height:94dvh;
+
+    overflow-y:auto;
+
+    background:
+        linear-gradient(180deg,#151515,#090909);
+
+    border:1px solid #292929;
+    border-bottom:0;
+
+    border-radius:28px 28px 0 0;
+
+    padding:11px 20px 30px;
+
+    transform:translateY(100%);
+
+    transition:
+        transform .45s cubic-bezier(.2,.8,.2,1);
+}
+
+.overlay.show .sheet{
+    transform:translateY(0);
+}
+
+.handle{
+    width:43px;
+    height:4px;
+
+    margin:2px auto 22px;
+
+    border-radius:10px;
+
+    background:#3b3b3b;
+}
+
+.sheet-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin-bottom:23px;
+}
+
+.sheet-title{
+    font-size:20px;
+    font-weight:900;
+}
+
+.close{
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    background:#111;
+    border:1px solid #292929;
+
+    color:#aaa;
+    font-size:21px;
+}
+
+.label{
+    color:#707070;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1.6px;
+}
+
+.price{
+    margin-top:7px;
+
+    font-size:46px;
+    font-weight:900;
+    letter-spacing:-2px;
+}
+
+
+/* =========================
+   AMOUNTS
+========================= */
+
+.amounts{
+    display:grid;
+    gap:10px;
+    margin-top:25px;
+}
+
+.amount{
+    width:100%;
+    min-height:72px;
+
+    padding:0 16px;
+
+    border-radius:15px;
+
+    background:#0d0d0d;
+    border:1px solid #292929;
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    text-align:left;
+}
+
+.amount.available:active{
+    transform:scale(.985);
+}
+
+.amount.selected{
+    background:#180f20;
+    border-color:#8a54ad;
+}
+
+.amount.disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.amount-info{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.amount-value{
+    font-size:17px;
+    font-weight:900;
+}
+
+.amount-note{
+    color:#666;
+    font-size:10px;
+}
+
+.disabled .amount-note{
+    color:#805c5c;
+    text-decoration:line-through;
+}
+
+.amount-radio{
+    width:20px;
+    height:20px;
+
+    border-radius:50%;
+    border:1px solid #555;
+}
+
+.selected .amount-radio{
+    border:5px solid #b873dd;
+}
+
+
+/* =========================
+   PRIMARY BUTTON
+========================= */
+
+.primary{
+    width:100%;
+    height:56px;
+
+    margin-top:19px;
+
+    border-radius:14px;
+
+    background:#fff;
+    color:#000;
+
+    font-size:13px;
+    font-weight:900;
+
+    transition:.2s;
+}
+
+.primary:active{
+    transform:scale(.985);
+}
+
+.primary.disabled{
+    opacity:.3;
+    pointer-events:none;
+}
+
+
+/* =========================
+   PAYMENT METHODS
+========================= */
+
+.methods{
+    margin-top:21px;
+    display:grid;
+    gap:10px;
+}
+
+.method{
+    width:100%;
+    min-height:76px;
+
+    padding:10px 12px;
+
+    border-radius:15px;
+
+    background:#0d0d0d;
+    border:1px solid #292929;
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+
+    transition:.2s;
+}
+
+.method.selected{
+    background:#180f20;
+    border-color:#8a54ad;
+}
+
+.method-logo{
+    width:51px;
+    height:51px;
+
+    flex:none;
+
+    border-radius:12px;
+
+    background:#fff;
+    border:1px solid #292929;
+
+    overflow:hidden;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:13px;
+}
+
+.method-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+}
+
+.method-info{
+    flex:1;
+    text-align:left;
+}
+
+.method-name{
+    font-size:14px;
+    font-weight:900;
+}
+
+.method-sub{
+    margin-top:5px;
+    color:#666;
+    font-size:10px;
+}
+
+.radio{
+    width:20px;
+    height:20px;
+
+    border-radius:50%;
+    border:1px solid #555;
+}
+
+.method.selected .radio{
+    border:5px solid #b873dd;
+}
+
+
+/* =========================
+   NUMBER FORM
+========================= */
+
+.number-box{
+    margin-top:22px;
+}
+
+.number-label{
+    display:block;
+
+    margin-bottom:8px;
+
+    color:#aaa;
+    font-size:12px;
+}
+
+.number-wrap{
+    height:57px;
+
+    display:flex;
+    align-items:center;
+
+    border-radius:13px;
+
+    background:#070707;
+    border:1px solid #292929;
+
+    overflow:hidden;
+}
+
+.prefix{
+    padding-left:15px;
+    color:#888;
+    font-size:14px;
+}
+
+.number-input{
+    flex:1;
+
+    height:100%;
+
+    padding:0 13px;
+
+    border:0;
+    outline:0;
+
+    background:transparent;
+    color:#fff;
+
+    font-size:16px;
+}
+
+.number-input::placeholder{
+    color:#444;
+}
+
+
+/* =========================
+   CONFIRM
+========================= */
+
+.confirm{
+    text-align:center;
+    padding:12px 0 5px;
+}
+
+.confirm-icon{
+    width:70px;
+    height:70px;
+
+    margin:0 auto 19px;
+
+    border-radius:50%;
+
+    background:#1c1025;
+    border:1px solid #76489a;
+
+    color:#c88be7;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+}
+
+.confirm-title{
+    font-size:21px;
+    font-weight:900;
+}
+
+.confirm-text{
+    margin-top:8px;
+
+    color:#707070;
+
+    font-size:11px;
+    line-height:1.5;
+}
+
+.confirm-price{
+    margin-top:24px;
+
+    font-size:40px;
+    font-weight:900;
+}
+
+.confirm-method{
+    margin-top:7px;
+    color:#888;
+    font-size:11px;
+}
+
+.notice{
+    margin-top:20px;
+
+    padding:11px;
+
+    border-radius:10px;
+
+    background:#0d0d0d;
+    border:1px solid #222;
+
+    color:#666;
+    font-size:10px;
+    line-height:1.5;
+}
+
+
+/* =========================
+   SUCCESS
+========================= */
+
+.success{
+    text-align:center;
+    padding:15px 0 5px;
+}
+
+.success-icon{
+    width:76px;
+    height:76px;
+
+    margin:0 auto 20px;
+
+    border-radius:50%;
+
+    background:#18111e;
+    border:1px solid #8550aa;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#c47be9;
+
+    font-size:30px;
+}
+
+.success h2{
+    font-size:22px;
+}
+
+.success p{
+    margin-top:8px;
+    color:#707070;
+    font-size:11px;
+    line-height:1.5;
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    z-index:100;
+
+    left:50%;
+    bottom:25px;
+
+    width:calc(100% - 40px);
+    max-width:420px;
+
+    padding:13px 15px;
+
+    border-radius:12px;
+
+    background:#1a1a1a;
+    border:1px solid #333;
+
+    color:#ddd;
+
+    text-align:center;
+    font-size:11px;
+
+    opacity:0;
+
+    transform:translate(-50%,20px);
+
+    pointer-events:none;
+
+    transition:.3s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+@media(max-height:650px){
+
+    .home{
+        padding-top:25px;
+    }
+
+    .flash{
+        height:245px;
+    }
+
+    .flash-icon{
+        width:76px;
+        height:76px;
+        font-size:34px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<div id="app" class="app">
+
+    <div class="topbar">
+        <div class="brand">
+            FLASHPAY <span>JX</span>
+        </div>
+    </div>
+
+    <main class="home">
+
+        <div class="state">
+
+            <div class="state-small">
+                Flashlight
+            </div>
+
+            <div id="stateValue"
+                 class="state-big">
+                OFF
+            </div>
+
+        </div>
+
+
+        <button class="flash"
+                onclick="flashAction()">
+
+            <div class="flash-icon">
+                🔦
+            </div>
+
+            <div id="flashLabel"
+                 class="flash-label">
+                OFF
+            </div>
+
+            <div class="flash-hint">
+                Tap to control
+            </div>
+
+        </button>
+
+
+        <div class="home-footer">
+            FLASHPAY JX
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =========================
+     AMOUNT SCREEN
+========================= -->
+
+<div id="amountOverlay"
+     class="overlay">
+
+    <div class="sheet">
+
+        <div class="handle"></div>
+
+        <div class="sheet-head">
+
+            <div class="sheet-title">
+                Payment
+            </div>
+
+            <button class="close"
+                    onclick="closeAmount()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="label">
+            Select amount
+        </div>
+
+        <div class="price">
+            ₱499
+        </div>
+
+
+        <div class="amounts">
+
+            <button class="amount disabled"
+                    type="button">
+
+                <div class="amount-info">
+
+                    <div class="amount-value">
+                        ₱999
+                    </div>
+
+                    <div class="amount-note">
+                        Not available
+                    </div>
+
+                </div>
+
+                <div class="amount-radio"></div>
+
+            </button>
+
+
+            <button class="amount disabled"
+                    type="button">
+
+                <div class="amount-info">
+
+                    <div class="amount-value">
+                        ₱599
+                    </div>
+
+                    <div class="amount-note">
+                        Not available
+                    </div>
+
+                </div>
+
+                <div class="amount-radio"></div>
+
+            </button>
+
+
+            <button id="amount499"
+                    class="amount available"
+                    type="button"
+                    onclick="select499()">
+
+                <div class="amount-info">
+
+                    <div class="amount-value">
+                        ₱499
+                    </div>
+
+                    <div class="amount-note">
+                        Available
+                    </div>
+
+                </div>
+
+                <div class="amount-radio"></div>
+
+            </button>
+
+        </div>
+
+
+        <button id="amountContinue"
+                class="primary disabled"
+                onclick="openMethods()">
+
+            CONTINUE
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PAYMENT METHOD
+========================= -->
+
+<div id="methodOverlay"
+     class="overlay">
+
+    <div class="sheet">
+
+        <div class="handle"></div>
+
+        <div class="sheet-head">
+
+            <div class="sheet-title">
+                Payment method
+            </div>
+
+            <button class="close"
+                    onclick="closeMethods()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="label">
+            Amount
+        </div>
+
+        <div class="price">
+            ₱499
+        </div>
+
+
+        <div class="methods">
+
+            <!-- GCASH -->
+
+            <button class="method"
+                    onclick="selectMethod(this,'GCash')">
+
+                <div class="method-logo">
+
+                    <img src="gcash.png"
+                         alt="GCash">
+
+                </div>
+
+                <div class="method-info">
+
+                    <div class="method-name">
+                        GCash
+                    </div>
+
+                    <div class="method-sub">
+                        Mobile payment
+                    </div>
+
+                </div>
+
+                <div class="radio"></div>
+
+            </button>
+
+
+            <!-- MAYA -->
+
+            <button class="method"
+                    onclick="selectMethod(this,'Maya')">
+
+                <div class="method-logo">
+
+                    <img src="maya.png"
+                         alt="Maya">
+
+                </div>
+
+                <div class="method-info">
+
+                    <div class="method-name">
+                        Maya
+                    </div>
+
+                    <div class="method-sub">
+                        Mobile payment
+                    </div>
+
+                </div>
+
+                <div class="radio"></div>
+
+            </button>
+
+
+            <!-- PAYPAL -->
+
+            <button class="method"
+                    onclick="selectMethod(this,'PayPal')">
+
+                <div class="method-logo">
+
+                    <img src="paypal.png"
+                         alt="PayPal">
+
+                </div>
+
+                <div class="method-info">
+
+                    <div class="method-name">
+                        PayPal
+                    </div>
+
+                    <div class="method-sub">
+                        Online payment
+                    </div>
+
+                </div>
+
+                <div class="radio"></div>
+
+            </button>
+
+        </div>
+
+
+        <button id="methodContinue"
+                class="primary disabled"
+                onclick="openNumber()">
+
+            CONTINUE
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     NUMBER SCREEN
+========================= -->
+
+<div id="numberOverlay"
+     class="overlay">
+
+    <div class="sheet">
+
+        <div class="handle"></div>
+
+        <div class="sheet-head">
+
+            <div class="sheet-title">
+                Payment details
+            </div>
+
+            <button class="close"
+                    onclick="closeNumber()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="label">
+            Amount
+        </div>
+
+        <div class="price">
+            ₱499
+        </div>
+
+
+        <div class="number-box">
+
+            <label class="number-label">
+                Mobile number
+            </label>
+
+            <div class="number-wrap">
+
+                <div class="prefix">
+                    +63
+                </div>
+
+                <input
+                    id="phone"
+                    class="number-input"
+                    type="tel"
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="9XXXXXXXXX"
+                    autocomplete="off">
+
+            </div>
+
+        </div>
+
+
+        <button class="primary"
+                onclick="openConfirm()">
+
+            CONTINUE
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     CONFIRMATION
+========================= -->
+
+<div id="confirmOverlay"
+     class="overlay">
+
+    <div class="sheet">
+
+        <div class="handle"></div>
+
+        <div class="sheet-head">
+
+            <div class="sheet-title">
+                Confirm
+            </div>
+
+            <button class="close"
+                    onclick="closeConfirm()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="confirm">
+
+            <div class="confirm-icon">
+                ✓
+            </div>
+
+            <div class="confirm-title">
+                Review payment
+            </div>
+
+            <div class="confirm-text">
+                Check your selected method and amount.
+            </div>
+
+            <div class="confirm-price">
+                ₱499
+            </div>
+
+            <div id="confirmMethod"
+                 class="confirm-method">
+                GCash
+            </div>
+
+
+            <div class="notice">
+                This webpage does not process or transfer
+                real money. The entered number is not
+                stored or sent anywhere.
+            </div>
+
+
+            <button class="primary"
+                    onclick="finishPayment()">
+
+                CONFIRM
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     SUCCESS
+========================= -->
+
+<div id="successOverlay"
+     class="overlay">
+
+    <div class="sheet">
+
+        <div class="handle"></div>
+
+        <div class="success">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>
+                Payment completed
+            </h2>
+
+            <p>
+                Your payment screen has been completed.
+            </p>
+
+
+            <button class="primary"
+                    onclick="resetApp()">
+
+                DONE
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="toast"
+     class="toast">
+</div>
+
+
+<script>
+
+/* =========================
+   STATE
+========================= */
+
+let flashlightTrack = null;
+let flashlightOn = false;
+
+let amountSelected = false;
+let selectedMethod = "";
+
+
+/* =========================
+   FLASHLIGHT
+========================= */
+
+async function turnOnFlashlight(){
+
+    try{
+
+        if(
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ){
+
+            toast(
+                "Flashlight control is not supported here."
+            );
+
+            return;
+        }
+
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video:{
+                    facingMode:{
+                        ideal:"environment"
+                    }
+                }
+
+            });
+
+
+        const track =
+            stream.getVideoTracks()[0];
+
+
+        const capabilities =
+            track.getCapabilities();
+
+
+        if(!capabilities.torch){
+
+            track.stop();
+
+            toast(
+                "Torch control is not supported by this browser."
+            );
+
+            return;
+        }
+
+
+        await track.applyConstraints({
+
+            advanced:[
+                {
+                    torch:true
+                }
+            ]
+
+        });
+
+
+        flashlightTrack = track;
+        flashlightOn = true;
+
+        updateFlash();
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        toast(
+            "Allow camera permission to control the flashlight."
+        );
+
+    }
+
+}
+
+
+function turnOffFlashlight(){
+
+    if(!flashlightTrack){
+        return;
+    }
+
+
+    try{
+
+        flashlightTrack
+            .applyConstraints({
+
+                advanced:[
+                    {
+                        torch:false
+                    }
+                ]
+
+            })
+            .catch(()=>{});
+
+    }
+    catch(e){}
+
+
+    try{
+        flashlightTrack.stop();
+    }
+    catch(e){}
+
+
+    flashlightTrack = null;
+    flashlightOn = false;
+
+    updateFlash();
+
+}
+
+
+/* =========================
+   FLASH ACTION
+========================= */
+
+function flashAction(){
+
+    if(!flashlightOn){
+
+        turnOnFlashlight();
+
+    }else{
+
+        openAmount();
+
+    }
+
+}
+
+
+/* =========================
+   FLASH UI
+========================= */
+
+function updateFlash(){
+
+    const app =
+        document.getElementById("app");
+
+    const value =
+        document.getElementById("stateValue");
+
+    const label =
+        document.getElementById("flashLabel");
+
+
+    if(flashlightOn){
+
+        app.classList.add("on");
+
+        value.textContent = "ON";
+        label.textContent = "ON";
+
+    }else{
+
+        app.classList.remove("on");
+
+        value.textContent = "OFF";
+        label.textContent = "OFF";
+
+    }
+
+}
+
+
+/* =========================
+   AMOUNT
+========================= */
+
+function openAmount(){
+
+    document
+        .getElementById("amountOverlay")
+        .classList.add("show");
+
+}
+
+
+function closeAmount(){
+
+    document
+        .getElementById("amountOverlay")
+        .classList.remove("show");
+
+}
+
+
+function select499(){
+
+    amountSelected = true;
+
+    document
+        .getElementById("amount499")
+        .classList.add("selected");
+
+    document
+        .getElementById("amountContinue")
+        .classList.remove("disabled");
+
+}
+
+
+/* =========================
+   METHODS
+========================= */
+
+function openMethods(){
+
+    if(!amountSelected){
+        return;
+    }
+
+
+    closeAmount();
+
+
+    setTimeout(()=>{
+
+        document
+            .getElementById("methodOverlay")
+            .classList.add("show");
+
+    },120);
+
+}
+
+
+function closeMethods(){
+
+    document
+        .getElementById("methodOverlay")
+        .classList.remove("show");
+
+}
+
+
+function selectMethod(element,method){
+
+    document
+        .querySelectorAll(".method")
+        .forEach(item=>{
+            item.classList.remove("selected");
+        });
+
+
+    element.classList.add("selected");
+
+    selectedMethod = method;
+
+
+    document
+        .getElementById("methodContinue")
+        .classList.remove("disabled");
+
+}
+
+
+/* =========================
+   NUMBER
+========================= */
+
+function openNumber(){
+
+    if(!selectedMethod){
+        return;
+    }
+
+
+    closeMethods();
+
+
+    setTimeout(()=>{
+
+        document
+            .getElementById("numberOverlay")
+            .classList.add("show");
+
+    },120);
+
+}
+
+
+function closeNumber(){
+
+    document
+        .getElementById("numberOverlay")
+        .classList.remove("show");
+
+}
+
+
+/* =========================
+   CONFIRM
+========================= */
+
+function openConfirm(){
+
+    const phone =
+        document
+            .getElementById("phone")
+            .value
+            .replace(/\D/g,"");
+
+
+    if(phone.length < 10){
+
+        toast(
+            "Enter a valid 10-digit mobile number."
+        );
+
+        return;
+    }
+
+
+    document
+        .getElementById("confirmMethod")
+        .textContent =
+        selectedMethod;
+
+
+    closeNumber();
+
+
+    setTimeout(()=>{
+
+        document
+            .getElementById("confirmOverlay")
+            .classList.add("show");
+
+    },120);
+
+}
+
+
+function closeConfirm(){
+
+    document
+        .getElementById("confirmOverlay")
+        .classList.remove("show");
+
+}
+
+
+/* =========================
+   FINISH
+========================= */
+
+function finishPayment(){
+
+    closeConfirm();
+
+
+    setTimeout(()=>{
+
+        document
+            .getElementById("successOverlay")
+            .classList.add("show");
+
+    },180);
+
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetApp(){
+
+    document
+        .getElementById("successOverlay")
+        .classList.remove("show");
+
+
+    turnOffFlashlight();
+
+
+    amountSelected = false;
+    selectedMethod = "";
+
+
+    document
+        .getElementById("amount499")
+        .classList.remove("selected");
+
+
+    document
+        .getElementById("amountContinue")
+        .classList.add("disabled");
+
+
+    document
+        .getElementById("methodContinue")
+        .classList.add("disabled");
+
+
+    document
+        .querySelectorAll(".method")
+        .forEach(item=>{
+            item.classList.remove("selected");
+        });
+
+
+    document
+        .getElementById("phone")
+        .value = "";
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer;
+
+function toast(message){
+
+    const box =
+        document.getElementById("toast");
+
+
+    box.textContent = message;
+
+    box.classList.add("show");
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer =
+        setTimeout(()=>{
+
+            box.classList.remove("show");
+
+        },2300);
+
+}
+
+
+/* =========================
+   BACKDROP CLOSE
+========================= */
+
+document
+    .querySelectorAll(".overlay")
+    .forEach(overlay=>{
+
+        overlay.addEventListener(
+            "click",
+            function(event){
+
+                if(event.target === overlay){
+
+                    overlay.classList.remove("show");
+
+                }
+
+            }
+        );
+
+    });
+
+</script>
+
+</body>
+</html>
