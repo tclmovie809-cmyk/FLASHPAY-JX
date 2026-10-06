@@ -1752,6 +1752,18 @@ document
     });
 
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+            .then(() => {
+                console.log("FLASHPAY JX app ready");
+            })
+            .catch(error => {
+                console.log("Service worker error:", error);
+            });
+    });
+}
+</script>
 </body>
 </html>
