@@ -8,10 +8,10 @@
   "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "gcash.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  {
+    "src": "flashpay-icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }
+]
 }
